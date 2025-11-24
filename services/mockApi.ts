@@ -239,6 +239,62 @@ export const analyzeStudentAnswerApi = async (question: Question, answerMd: stri
 };
 
 /**
+ * Batch Processing for multiple files
+ */
+export const batchProcessStudentExamsApi = async (files: FileList, questions: Question[]): Promise<StudentResult[]> => {
+  await delay(2000); // Simulate processing delay
+
+  const results: StudentResult[] = [];
+  const names = ["李华", "王伟", "张敏", "刘洋", "陈静", "杨强", "赵丽", "孙凯", "周杰", "吴娜"];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const studentName = names[i % names.length] + (i >= names.length ? ` ${i + 1}` : "");
+    
+    // Create random answers for this student
+    const answers: StudentAnswer[] = [];
+    const missingKPs = new Set<string>();
+
+    for (const q of questions) {
+      // Randomize correctness (approx 60% correct rate)
+      const isCorrect = Math.random() > 0.4;
+      
+      const knowledge = q.analysis?.knowledgePoints || [];
+      const methods = q.analysis?.methods || [];
+      
+      if (!isCorrect) {
+        knowledge.slice(1).forEach(k => missingKPs.add(k));
+      }
+
+      answers.push({
+        questionId: q.id,
+        imageUrl: mathImageUrl(`Q${q.number} ${studentName} 手写`, isCorrect ? "f0fdf4" : "fef2f2"),
+        studentAnswerMd: isCorrect ? "解：步骤略，结果正确。" : "解：尝试推导公式，但计算过程出现偏差...",
+        isCorrect,
+        score: isCorrect ? 10 : Math.floor(Math.random() * 5),
+        maxScore: 10,
+        feedback: isCorrect ? "回答正确。" : "关键步骤缺失，需加强练习。",
+        missingPoints: isCorrect ? [] : knowledge.slice(1),
+        masteredPoints: isCorrect ? knowledge : [knowledge[0] || ""].filter(Boolean),
+        missingMethods: isCorrect ? [] : methods,
+        masteredMethods: isCorrect ? methods : [],
+        isAnalyzing: false, // Return fully analyzed
+        isVerified: false
+      });
+    }
+
+    results.push({
+      studentName,
+      answers,
+      overallMastery: "待定",
+      overallGaps: Array.from(missingKPs)
+    });
+  }
+
+  return results;
+};
+
+/**
  * 5. add_to_knowledge_graph (Mock Endpoint)
  * Pushes analysis data to the Knowledge Graph API.
  */

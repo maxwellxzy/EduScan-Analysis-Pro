@@ -1,14 +1,17 @@
+
 import React, { useState, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { ExamAnalysisView } from './components/ExamAnalysisView';
 import { StudentAnalysisView } from './components/StudentAnalysisView';
+import { BatchStudentAnalysisView } from './components/BatchStudentAnalysisView';
 import { OverallSummary } from './components/OverallSummary';
-import { Question, StudentAnswer } from './types';
+import { Question, StudentAnswer, StudentResult } from './types';
 import { 
   splitExamApi, 
   analyzeQuestionApi, 
   splitStudentExamApi, 
-  analyzeStudentAnswerApi 
+  analyzeStudentAnswerApi,
+  batchProcessStudentExamsApi
 } from './services/mockApi';
 
 const App = () => {
@@ -17,10 +20,14 @@ const App = () => {
   const [isExamSplitting, setIsExamSplitting] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
 
-  // State for Student
+  // State for Student (Single Mode)
   const [studentFile, setStudentFile] = useState<File | null>(null);
   const [isStudentSplitting, setIsStudentSplitting] = useState(false);
   const [studentAnswers, setStudentAnswers] = useState<StudentAnswer[]>([]);
+
+  // State for Student (Batch Mode)
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [batchResults, setBatchResults] = useState<StudentResult[]>([]);
 
   // 1. Handle Exam Upload & Split
   const handleExamUpload = async (file: File) => {
@@ -29,6 +36,8 @@ const App = () => {
     setQuestions([]);
     setStudentFile(null);
     setStudentAnswers([]);
+    setBatchResults([]);
+    setIsBatchMode(false);
 
     try {
       // Step 1.1: Split exam into questions (Mock API)
@@ -73,13 +82,15 @@ const App = () => {
     ));
   };
 
-  // 2. Handle Student Upload & Analysis
+  // 2. Handle Single Student Upload & Analysis
   const handleStudentUpload = async (file: File) => {
     if (questions.length === 0) return;
     
     setStudentFile(file);
     setIsStudentSplitting(true);
     setStudentAnswers([]);
+    setIsBatchMode(false);
+    setBatchResults([]);
 
     try {
       // Step 2.1: Split student answers
@@ -124,10 +135,44 @@ const App = () => {
     }
   };
 
+  // 3. Handle Batch Upload
+  const handleBatchUpload = async (files: FileList) => {
+    if (questions.length === 0) return;
+
+    setIsStudentSplitting(true);
+    setIsBatchMode(true);
+    setStudentAnswers([]); // Clear single mode data
+    setBatchResults([]);
+
+    try {
+        const results = await batchProcessStudentExamsApi(files, questions);
+        setBatchResults(results);
+    } catch (error) {
+        console.error("Batch processing failed", error);
+    } finally {
+        setIsStudentSplitting(false);
+    }
+  };
+
   const handleUpdateStudentAnswer = (questionId: string, updates: Partial<StudentAnswer>) => {
     setStudentAnswers(prev => prev.map(a =>
       a.questionId === questionId ? { ...a, ...updates } : a
     ));
+  };
+
+  const handleUpdateBatchAnswer = (studentIndex: number, questionId: string, updates: Partial<StudentAnswer>) => {
+    setBatchResults(prev => prev.map((student, idx) => {
+      if (idx !== studentIndex) return student;
+      
+      const newAnswers = student.answers.map(a => 
+        a.questionId === questionId ? { ...a, ...updates } : a
+      );
+      
+      return {
+        ...student,
+        answers: newAnswers
+      };
+    }));
   };
 
   // Check if all exam analysis is done to enable student upload
@@ -163,6 +208,7 @@ const App = () => {
                  label="拖拽试卷 PDF/图片 到此处" 
                  subLabel="请确保包含标准答案" 
                  onFileSelect={handleExamUpload}
+                 variant="compact"
                />
             </div>
             
@@ -186,7 +232,7 @@ const App = () => {
           </section>
         )}
 
-        {/* Step 3: Student Upload */}
+        {/* Step 3: Student Upload (Single + Batch) */}
         <section className={`transition-opacity duration-500 ${isExamFullyAnalyzed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
           <div className="flex items-center space-x-4 mb-6 mt-12 border-t pt-8 border-slate-200">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">2</div>
@@ -194,36 +240,70 @@ const App = () => {
           </div>
 
           <div className="grid md:grid-cols-4 gap-6">
-             <div className="md:col-span-1">
-                <FileUpload 
-                  label="拖拽学生答卷" 
-                  subLabel="支持手写或电子版" 
-                  onFileSelect={handleStudentUpload}
-                  disabled={!isExamFullyAnalyzed}
-                />
+             <div className="md:col-span-2 flex gap-4">
+                {/* Single Upload */}
+                <div className="flex-1">
+                   <FileUpload 
+                     label="单份上传" 
+                     subLabel="拖拽单个学生答卷" 
+                     onFileSelect={handleStudentUpload}
+                     disabled={!isExamFullyAnalyzed}
+                   />
+                </div>
+                {/* Batch Upload */}
+                <div className="flex-1">
+                   <FileUpload 
+                     label="批量上传" 
+                     subLabel="拖拽多个学生答卷 (批量)" 
+                     onFileSelect={() => {}} // Not used when multiple is true
+                     onMultipleFilesSelect={handleBatchUpload}
+                     disabled={!isExamFullyAnalyzed}
+                     multiple={true}
+                   />
+                </div>
              </div>
-             <div className="md:col-span-3 flex items-center">
+
+             <div className="md:col-span-2 flex items-center">
                 {isStudentSplitting && (
-                   <div className="flex items-center space-x-3 text-purple-600 bg-purple-50 px-4 py-2 rounded-lg">
+                   <div className="flex items-center space-x-3 text-purple-600 bg-purple-50 px-4 py-2 rounded-lg ml-4">
                       <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"></div>
-                      <span>正在分析学生笔迹与逻辑...</span>
+                      <span>
+                          {isBatchMode ? '正在批量处理学生答卷...' : '正在分析学生笔迹与逻辑...'}
+                      </span>
                    </div>
                 )}
              </div>
           </div>
         </section>
 
-        {/* Step 4: Student Analysis Display */}
-        {studentAnswers.length > 0 && (
-           <section>
-              <StudentAnalysisView 
-                questions={questions} 
-                answers={studentAnswers} 
-                studentName="张三 (模拟数据)"
-                examTitle={examFile?.name.replace(/\.[^/.]+$/, "")}
-                onUpdateAnswer={handleUpdateStudentAnswer}
-              />
-           </section>
+        {/* Step 4: Student Analysis Display (Conditional) */}
+        {!isStudentSplitting && (
+            <>
+                {/* Case A: Single Student View */}
+                {!isBatchMode && studentAnswers.length > 0 && (
+                <section>
+                    <StudentAnalysisView 
+                        questions={questions} 
+                        answers={studentAnswers} 
+                        studentName="张三 (模拟数据)"
+                        examTitle={examFile?.name.replace(/\.[^/.]+$/, "")}
+                        onUpdateAnswer={handleUpdateStudentAnswer}
+                    />
+                </section>
+                )}
+
+                {/* Case B: Batch Student View */}
+                {isBatchMode && batchResults.length > 0 && (
+                <section>
+                    <BatchStudentAnalysisView
+                        results={batchResults}
+                        questions={questions}
+                        examTitle={examFile?.name.replace(/\.[^/.]+$/, "") || "批量作业"}
+                        onUpdateAnswer={handleUpdateBatchAnswer}
+                    />
+                </section>
+                )}
+            </>
         )}
 
       </main>
