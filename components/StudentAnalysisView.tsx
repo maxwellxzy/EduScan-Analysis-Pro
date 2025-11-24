@@ -99,7 +99,7 @@ const StudentAnswerCard: React.FC<{
       <div className="md:w-1/3 p-6 border-b md:border-b-0 md:border-r border-slate-200/60 bg-white">
         <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">学生作答</div>
         <div className="mb-4 rounded border border-slate-100 overflow-hidden">
-          <img src={ans.imageUrl} className="w-full h-24 object-cover" alt="Student answer crop" />
+          <img src={ans.imageUrl} className="w-full h-auto object-contain" alt="Student answer crop" />
         </div>
         <div className="text-sm font-mono text-slate-600">
           <MarkdownRenderer content={ans.studentAnswerMd} />

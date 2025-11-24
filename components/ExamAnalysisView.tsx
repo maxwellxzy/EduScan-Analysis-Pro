@@ -93,7 +93,7 @@ const QuestionCard: React.FC<{ question: Question, onUpdate: (id: string, update
             <MarkdownRenderer content={q.contentMd} />
         </div>
         <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-            <img src={q.imageUrl} alt={`Question ${q.number}`} className="w-full h-48 object-cover opacity-90" />
+            <img src={q.imageUrl} alt={`Question ${q.number}`} className="w-full h-auto opacity-90" />
         </div>
       </div>
 

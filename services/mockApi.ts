@@ -121,7 +121,7 @@ export const splitExamApi = async (file: File): Promise<Partial<Question>[]> => 
   return PREDEFINED_QUESTIONS.map((q, i) => ({
     id: `q-${Date.now()}-${i}`,
     number: i + 1,
-    imageUrl: mathImageUrl(q.imgText, ['1e293b', '0f172a', '334155'][i % 3]), 
+    imageUrl: `https://3zc4sx.dongshan.tech/images/${i + 1}.jpeg`, 
     contentMd: q.content,
     analysis: null,
     isAnalyzing: true 
@@ -177,7 +177,7 @@ export const splitStudentExamApi = async (file: File, examQuestions: Question[])
 
   return examQuestions.map((q, i) => ({
     questionId: q.id,
-    imageUrl: mathImageUrl(`Q${q.number} 学生手写区域`, "f8fafc"), // Light background for paper
+    imageUrl: q.imageUrl, // Use the original question image instead of generated placeholder
     studentAnswerMd: studentAnswers[i] || "（学生未作答）",
     isAnalyzing: true
   }));
@@ -268,7 +268,7 @@ export const batchProcessStudentExamsApi = async (files: FileList, questions: Qu
 
       answers.push({
         questionId: q.id,
-        imageUrl: mathImageUrl(`Q${q.number} ${studentName} 手写`, isCorrect ? "f0fdf4" : "fef2f2"),
+        imageUrl: q.imageUrl, // Use original question image
         studentAnswerMd: isCorrect ? "解：步骤略，结果正确。" : "解：尝试推导公式，但计算过程出现偏差...",
         isCorrect,
         score: isCorrect ? 10 : Math.floor(Math.random() * 5),

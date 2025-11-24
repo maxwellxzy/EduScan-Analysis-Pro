@@ -70,7 +70,7 @@ const BatchAnswerCard: React.FC<{
   
          {/* Image */}
          <div className="rounded border border-slate-200 overflow-hidden bg-white">
-             <img src={ans.imageUrl} className="w-full h-32 object-cover" alt="Student Answer" />
+             <img src={ans.imageUrl} className="w-full h-auto object-contain" alt="Student Answer" />
          </div>
   
          {/* Content or Edit Form */}
