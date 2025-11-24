@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { StudentResult, Question, StudentAnswer } from '../types';
-import { BrainIcon, CheckCircleIcon, EditIcon, SaveIcon, XIcon, BookOpenIcon } from './Icons';
+import { BrainIcon, CheckCircleIcon, EditIcon, SaveIcon, XIcon, BookOpenIcon, CheckIcon } from './Icons';
 import { addToKnowledgeGraphApi } from '../services/mockApi';
 
 interface BatchStudentAnalysisViewProps {
@@ -210,6 +210,7 @@ const BatchStudentCard: React.FC<{
             studentName: student.studentName,
             examTitle,
             score: totalScore,
+            totalScore: maxScore,
             knowledgePoints: { 
                 missing: Array.from(missingPoints),
                 mastered: Array.from(masteredPoints)
@@ -380,6 +381,8 @@ const BatchStudentCard: React.FC<{
 
 export const BatchStudentAnalysisView: React.FC<BatchStudentAnalysisViewProps> = ({ results, questions, examTitle, onUpdateAnswer }) => {
   const [page, setPage] = useState(1);
+  const [batchAddStatus, setBatchAddStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [isConfirmingBatchAdd, setIsConfirmingBatchAdd] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
@@ -396,12 +399,117 @@ export const BatchStudentAnalysisView: React.FC<BatchStudentAnalysisViewProps> =
       }, 0);
   };
 
+  const handleBatchAddClick = () => {
+    if (batchAddStatus === 'success') return;
+    setIsConfirmingBatchAdd(true);
+  };
+
+  const handleCancelBatchAdd = () => {
+    setIsConfirmingBatchAdd(false);
+  };
+
+  const handleConfirmBatchAdd = async () => {
+    setIsConfirmingBatchAdd(false);
+    setBatchAddStatus('loading');
+    
+    try {
+      const promises = results.map(student => {
+          const totalScore = student.answers.reduce((acc, a) => acc + a.score, 0);
+          const maxScore = student.answers.reduce((acc, a) => acc + a.maxScore, 0);
+          
+          const missingPoints = new Set<string>();
+          const missingMethods = new Set<string>();
+          const masteredPoints = new Set<string>();
+          const masteredMethods = new Set<string>();
+
+          student.answers.forEach(ans => {
+              ans.missingPoints.forEach(p => missingPoints.add(p));
+              ans.missingMethods.forEach(m => missingMethods.add(m));
+              ans.masteredPoints.forEach(p => masteredPoints.add(p));
+              ans.masteredMethods.forEach(m => masteredMethods.add(m));
+          });
+
+          return addToKnowledgeGraphApi({
+              studentName: student.studentName,
+              examTitle,
+              score: totalScore,
+              totalScore: maxScore,
+              knowledgePoints: { 
+                  missing: Array.from(missingPoints),
+                  mastered: Array.from(masteredPoints)
+              },
+              methods: { 
+                  missing: Array.from(missingMethods),
+                  mastered: Array.from(masteredMethods)
+              }
+          });
+      });
+
+      await Promise.all(promises);
+      setBatchAddStatus('success');
+    } catch (error) {
+      console.error(error);
+      setBatchAddStatus('idle');
+    }
+  };
+
   return (
     <div ref={containerRef} className="space-y-8 mt-12 pt-12 border-t border-slate-200 scroll-mt-24">
         <div className="flex items-center justify-between">
             <div>
                 <h2 className="text-2xl font-bold text-slate-800">批量学生答卷分析</h2>
                 <p className="text-slate-500 mt-1">共 {results.length} 位学生，自动筛选错题与薄弱点</p>
+            </div>
+            
+            <div className="relative">
+                {isConfirmingBatchAdd ? (
+                    <div className="flex items-center space-x-3 bg-white p-1.5 rounded-full border border-slate-200 shadow-lg animate-in fade-in slide-in-from-right-4">
+                        <span className="text-sm font-bold text-slate-600 pl-3">确认全部加入?</span>
+                        <button 
+                            onClick={handleConfirmBatchAdd}
+                            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                            title="确定"
+                        >
+                            <CheckIcon className="w-5 h-5" />
+                        </button>
+                        <button 
+                            onClick={handleCancelBatchAdd}
+                            className="bg-slate-100 text-slate-500 p-2 rounded-full hover:bg-slate-200 transition-colors"
+                            title="取消"
+                        >
+                            <XIcon className="w-5 h-5" />
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={handleBatchAddClick}
+                        disabled={batchAddStatus !== 'idle'}
+                        className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold shadow-lg text-lg transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2
+                            ${batchAddStatus === 'success' 
+                                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white cursor-default focus:ring-emerald-500' 
+                                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-indigo-200 focus:ring-indigo-500'
+                            }
+                            ${batchAddStatus === 'loading' ? 'opacity-75 cursor-wait' : ''}
+                        `}
+                    >
+                        {batchAddStatus === 'loading' ? (
+                            <>
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                <span>批量处理中...</span>
+                            </>
+                        ) : batchAddStatus === 'success' ? (
+                            <>
+                                <CheckCircleIcon className="w-6 h-6" />
+                                <span>全部已加入</span>
+                            </>
+                        ) : (
+                            <>
+                                <BrainIcon className="w-6 h-6" />
+                                <span>全部加入知识图谱</span>
+                            </>
+                        )}
+                    </button>
+                )}
             </div>
         </div>
 

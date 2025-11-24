@@ -1,3 +1,4 @@
+
 # EduScan API 接口文档
 
 本文档定义了前端与后端交互的 RESTful API 接口规范。
@@ -155,6 +156,48 @@
 
 ---
 
+### 2.3 批量处理学生答卷 (Batch Process Student Exams)
+
+批量上传多个学生的答卷，进行队列处理并返回分析结果列表。
+
+*   **URL**: `/student/exam/batch-process`
+*   **Method**: `POST`
+*   **Content-Type**: `multipart/form-data`
+
+**请求参数 (Request)**:
+
+| 字段名 | 类型 | 必填 | 描述 |
+| :--- | :--- | :--- | :--- |
+| `files[]` | File[] | 是 | 多个学生答卷文件 |
+| `examId` | String | 是 | 关联的原始试卷ID |
+
+**响应数据 (Response)**:
+
+```json
+[
+  {
+    "studentName": "李华",
+    "overallMastery": "良好",
+    "overallGaps": ["集合运算"],
+    "answers": [
+      {
+        "questionId": "q-1715001",
+        "score": 5,
+        "isCorrect": false,
+        "feedback": "...",
+        "missingPoints": ["..."],
+        "masteredPoints": ["..."],
+        "imageUrl": "https://..."
+      },
+      // ... 更多题目
+    ]
+  },
+  // ... 更多学生
+]
+```
+
+---
+
 ## 3. 知识图谱集成
 
 ### 3.1 加入学生知识图谱 (Add to Knowledge Graph)
@@ -191,5 +234,47 @@
   "success": true,
   "message": "Data successfully integrated into knowledge graph.",
   "recordId": "kg-record-998877"
+}
+```
+
+### 3.2 批量加入知识图谱 (Batch Add to Knowledge Graph)
+
+支持一次性将多个学生的分析数据推送到知识图谱系统（可选接口，或由客户端循环调用 3.1 实现）。
+
+*   **URL**: `/knowledge-graph/batch-add`
+*   **Method**: `POST`
+*   **Content-Type**: `application/json`
+
+**请求参数 (Request)**:
+
+```json
+{
+  "examTitle": "2024年高一数学期中模拟卷",
+  "students": [
+    {
+      "studentName": "李华",
+      "score": 90,
+      "totalScore": 100,
+      "knowledgePoints": { ... },
+      "methods": { ... }
+    },
+    {
+      "studentName": "王伟",
+      "score": 75,
+      "totalScore": 100,
+      "knowledgePoints": { ... },
+      "methods": { ... }
+    }
+  ]
+}
+```
+
+**响应数据 (Response)**:
+
+```json
+{
+  "success": true,
+  "processedCount": 2,
+  "message": "Batch data successfully integrated."
 }
 ```
