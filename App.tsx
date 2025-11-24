@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { ExamAnalysisView } from './components/ExamAnalysisView';
@@ -174,7 +173,7 @@ const App = () => {
                     <p className="text-slate-600">AI正在分割试卷...</p>
                  </div>
                ) : questions.length > 0 ? (
-                 <OverallSummary questions={questions} studentAnswers={studentAnswers.length > 0 ? studentAnswers : undefined} />
+                 <OverallSummary questions={questions} />
                ) : null}
             </div>
           </div>
