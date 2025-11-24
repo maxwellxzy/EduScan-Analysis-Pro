@@ -94,6 +94,8 @@ const App = () => {
         feedback: "",
         missingPoints: [],
         masteredPoints: [],
+        missingMethods: [],
+        masteredMethods: [],
         isAnalyzing: true
       })) as StudentAnswer[];
 
@@ -121,6 +123,12 @@ const App = () => {
       console.error("Failed to process student exam", error);
       setIsStudentSplitting(false);
     }
+  };
+
+  const handleUpdateStudentAnswer = (questionId: string, updates: Partial<StudentAnswer>) => {
+    setStudentAnswers(prev => prev.map(a =>
+      a.questionId === questionId ? { ...a, ...updates } : a
+    ));
   };
 
   // Check if all exam analysis is done to enable student upload
@@ -209,7 +217,12 @@ const App = () => {
         {/* Step 4: Student Analysis Display */}
         {studentAnswers.length > 0 && (
            <section>
-              <StudentAnalysisView questions={questions} answers={studentAnswers} studentName="张三 (模拟数据)" />
+              <StudentAnalysisView 
+                questions={questions} 
+                answers={studentAnswers} 
+                studentName="张三 (模拟数据)"
+                onUpdateAnswer={handleUpdateStudentAnswer}
+              />
            </section>
         )}
 

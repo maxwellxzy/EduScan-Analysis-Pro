@@ -30,6 +30,8 @@ export interface StudentAnswer {
   missingMethods: string[]; // Methods missed
   masteredMethods: string[]; // Methods mastered
   isAnalyzing: boolean;
+  isVerified?: boolean; // Teacher verified the grading
+  reviewChapter?: string; // Specific review chapter for this answer
 }
 
 export interface ExamData {
