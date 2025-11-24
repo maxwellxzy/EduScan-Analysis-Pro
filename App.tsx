@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { ExamAnalysisView } from './components/ExamAnalysisView';
@@ -65,6 +66,12 @@ const App = () => {
       console.error("Failed to split exam", error);
       setIsExamSplitting(false);
     }
+  };
+
+  const handleUpdateQuestion = (id: string, updates: Partial<Question>) => {
+    setQuestions(prev => prev.map(q =>
+      q.id === id ? { ...q, ...updates } : q
+    ));
   };
 
   // 2. Handle Student Upload & Analysis
@@ -168,7 +175,7 @@ const App = () => {
         {/* Step 2: Analysis Display */}
         {questions.length > 0 && (
           <section>
-             <ExamAnalysisView questions={questions} />
+             <ExamAnalysisView questions={questions} onUpdateQuestion={handleUpdateQuestion} />
           </section>
         )}
 

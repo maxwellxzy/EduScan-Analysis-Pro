@@ -1,3 +1,4 @@
+
 export interface AnalysisTags {
   knowledgePoints: string[];
   methods: string[];
@@ -13,6 +14,7 @@ export interface Question {
   contentMd: string;
   analysis: AnalysisTags | null; // Null while analyzing
   isAnalyzing: boolean;
+  isVerified?: boolean;
 }
 
 export interface StudentAnswer {
