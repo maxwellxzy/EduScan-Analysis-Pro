@@ -1,14 +1,16 @@
 
 import React, { useState } from 'react';
 import { Question, StudentAnswer } from '../types';
-import { CheckCircleIcon, AlertCircleIcon, BookOpenIcon, CheckIcon, EditIcon, SaveIcon, XIcon } from './Icons';
+import { CheckCircleIcon, AlertCircleIcon, BookOpenIcon, CheckIcon, EditIcon, SaveIcon, XIcon, BrainIcon } from './Icons';
 import { Spinner } from './Spinner';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { addToKnowledgeGraphApi } from '../services/mockApi';
 
 interface StudentAnalysisViewProps {
   questions: Question[];
   answers: StudentAnswer[];
   studentName: string;
+  examTitle?: string;
   onUpdateAnswer: (questionId: string, updates: Partial<StudentAnswer>) => void;
 }
 
@@ -271,7 +273,9 @@ const StudentAnswerCard: React.FC<{
   );
 };
 
-export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questions, answers, studentName, onUpdateAnswer }) => {
+export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questions, answers, studentName, examTitle = "未知试卷", onUpdateAnswer }) => {
+  const [graphStatus, setGraphStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+
   // Compute Overall Student Summary
   const analysisComplete = answers.every(a => !a.isAnalyzing);
   
@@ -299,6 +303,33 @@ export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questi
         }
      }
   });
+
+  const handleAddToGraph = async () => {
+      setGraphStatus('loading');
+      try {
+          const studentScore = answers.reduce((acc, a) => acc + a.score, 0);
+          const maxScore = answers.reduce((acc, a) => acc + a.maxScore, 0);
+
+          await addToKnowledgeGraphApi({
+              studentName,
+              examTitle,
+              score: studentScore,
+              totalScore: maxScore,
+              knowledgePoints: {
+                  mastered: Array.from(masteredKPs),
+                  missing: Array.from(missingKPs)
+              },
+              methods: {
+                  mastered: Array.from(masteredMethods),
+                  missing: Array.from(missingMethods)
+              }
+          });
+          setGraphStatus('success');
+      } catch (error) {
+          console.error(error);
+          setGraphStatus('idle'); 
+      }
+  };
 
   return (
     <div className="space-y-8 mt-12 pt-12 border-t border-slate-200">
@@ -383,6 +414,40 @@ export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questi
           );
         })}
       </div>
+
+      {/* Add to Knowledge Graph Button */}
+      {analysisComplete && (
+        <div className="flex justify-end mt-8 pb-8">
+            <button
+                onClick={handleAddToGraph}
+                disabled={graphStatus !== 'idle'}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-full font-bold shadow-lg transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2
+                    ${graphStatus === 'success' 
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white cursor-default focus:ring-emerald-500' 
+                        : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-indigo-200 focus:ring-indigo-500'
+                    }
+                    ${graphStatus === 'loading' ? 'opacity-75 cursor-wait' : ''}
+                `}
+            >
+                {graphStatus === 'loading' ? (
+                    <>
+                        <Spinner size="sm" />
+                        <span>处理中...</span>
+                    </>
+                ) : graphStatus === 'success' ? (
+                    <>
+                        <CheckCircleIcon className="w-5 h-5" />
+                        <span>已加入知识图谱</span>
+                    </>
+                ) : (
+                    <>
+                        <BrainIcon className="w-5 h-5" />
+                        <span>加入学生知识图谱</span>
+                    </>
+                )}
+            </button>
+        </div>
+      )}
     </div>
   );
 };

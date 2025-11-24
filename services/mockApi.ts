@@ -1,3 +1,4 @@
+
 import { Question, AnalysisTags, StudentAnswer, ExamData, StudentResult } from '../types';
 
 const DELAY_MS = 1000; // Simulate network latency
@@ -85,7 +86,7 @@ const PREDEFINED_QUESTIONS = [
     }
   },
   {
-    content: "**第 5 题（圆锥曲线）：**\n已知椭圆 $C: \\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1 (a>b>0)$ 的离心率为 $\\frac{\\sqrt{2}}{2}$，且过点 $(2, \\sqrt{2})$。\n(1) 求椭圆 $C$ 的方程；\n(2) 设直线 $l$ 不经过点 $P(0,1)$ 且与椭圆 $C$ 相交于 $A, B$ 两点。若直线 $PA$ 与 $PB$ 的斜率之和为 -1，证明直线 $l$ 过定点。",
+    content: "**第 5 题（圆锥曲线）：**\n已知椭圆 $C: \\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1 (a>b>0)$ 的离心率为 $\\frac{\\sqrt{2}} {2}$，且过点 2, $\\sqrt{2}$。\n(1) 求椭圆 $C$ 的方程；\n(2) 设直线 $l$ 不经过点 $P(0,1)$ 且与椭圆 $C$ 相交于 $A, B$ 两点。若直线 $PA$ 与 $PB$ 的斜率之和为 -1，证明直线 $l$ 过定点。",
     imgText: "椭圆与直线相交",
     defaultDifficulty: 9,
     tags: {
@@ -235,4 +236,14 @@ export const analyzeStudentAnswerApi = async (question: Question, answerMd: stri
     masteredMethods: isCorrect ? methods : [],
     missingMethods: isCorrect ? [] : methods
   };
+};
+
+/**
+ * 5. add_to_knowledge_graph (Mock Endpoint)
+ * Pushes analysis data to the Knowledge Graph API.
+ */
+export const addToKnowledgeGraphApi = async (data: any): Promise<boolean> => {
+  await delay(1500); // Simulate API latency
+  console.log("Adding to Knowledge Graph:", data);
+  return true;
 };

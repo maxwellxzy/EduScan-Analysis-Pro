@@ -221,6 +221,7 @@ const App = () => {
                 questions={questions} 
                 answers={studentAnswers} 
                 studentName="张三 (模拟数据)"
+                examTitle={examFile?.name.replace(/\.[^/.]+$/, "")}
                 onUpdateAnswer={handleUpdateStudentAnswer}
               />
            </section>
