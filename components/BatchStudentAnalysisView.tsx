@@ -227,10 +227,10 @@ const BatchStudentCard: React.FC<{
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
       {/* Sticky Header */}
       <div className={`
-          flex items-center justify-between p-4 border-b border-slate-100 bg-white/95 backdrop-blur-sm
+          flex items-center justify-between p-4 border-b border-slate-100 bg-white/95 backdrop-blur-sm rounded-t-xl
           ${graphStatus !== 'success' ? 'sticky top-0 z-30 shadow-md transition-shadow' : ''}
       `}>
         <div className="flex items-center gap-4">
