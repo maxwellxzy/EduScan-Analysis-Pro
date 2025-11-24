@@ -1,20 +1,89 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# EduScan 智能阅卷分析系统
 
-# Run and deploy your AI Studio app
+## 项目简介
 
-This contains everything you need to run your app locally.
+**EduScan** 是一个基于 React 和 TypeScript 构建的综合性智能试卷分析系统前端原型。该系统旨在通过 AI 技术辅助教师完成试卷结构的深度解析，并对学生的答题情况进行智能化诊断，生成可视化的学情分析报告。
 
-View your app in AI Studio: https://ai.studio/apps/drive/1L-HfI9uw2F_iOMfBgDRd8hgmafQJQ-3m
+系统模拟了从试卷上传、题目分割、知识点标注到学生答卷批改的全流程，并集成了数学公式渲染和数据图表分析功能。
 
-## Run Locally
+## 核心功能
 
-**Prerequisites:**  Node.js
+### 1. 试卷深度分析
+*   **自动分割与识别**：支持上传原始试卷（图片/PDF），系统模拟调用 AI 接口将试卷分割为独立的题目单元。
+*   **多维标签标注**：自动分析每道题目的核心属性：
+    *   **知识点** (Knowledge Points)
+    *   **解题方法** (Methods)
+    *   **核心素养** (Competencies)
+    *   **教材章节** (Textbook Chapters)
+    *   **难度系数** (Difficulty 1-10)
+*   **人工校验与编辑**：教师可以对 AI 自动分析的结果进行人工修正、补充和确认。
+*   **整体难度概览**：通过图表可视化展示整张试卷的难度分布、知识点覆盖率等宏观指标。
 
+### 2. 学生学情诊断
+*   **答卷自动切分**：上传学生答题卡，系统自动对应题目区域展示学生手写内容。
+*   **智能模拟批改**：
+    *   模拟 AI 判断对错并给出得分。
+    *   自动生成评语。
+    *   识别**知识点漏洞**和**方法缺失**。
+*   **个性化复习建议**：根据错题自动推荐需要复习的教科书章节。
+*   **学情可视化报告**：
+    *   **优势档案**：展示学生已掌握的知识点和方法。
+    *   **差距分析**：高亮显示缺失的薄弱环节。
+*   **知识图谱集成**：支持一键将分析结果（得分、掌握情况）推送到后台知识图谱系统。
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 技术栈
+
+*   **前端框架**: [React 19](https://react.dev/)
+*   **开发语言**: [TypeScript](https://www.typescriptlang.org/)
+*   **样式库**: [Tailwind CSS](https://tailwindcss.com/) (配合 Typography 插件)
+*   **数学公式渲染**: [KaTeX](https://katex.org/), `react-markdown`, `remark-math`, `rehype-katex`
+*   **图表库**: [Recharts](https://recharts.org/)
+*   **构建工具**: Vite (推荐)
+
+## 项目结构
+
+```
+src/
+├── components/           # UI 组件库
+│   ├── ExamAnalysisView.tsx    # 试卷题目分析主视图
+│   ├── StudentAnalysisView.tsx # 学生答题分析主视图
+│   ├── OverallSummary.tsx      # 综合数据图表与统计组件
+│   ├── FileUpload.tsx          # 文件拖拽上传组件
+│   ├── MarkdownRenderer.tsx    # 支持公式的 Markdown 渲染器
+│   └── ...                     # 其他通用组件 (Icons, Spinner)
+├── services/
+│   └── mockApi.ts              # 模拟后端 API (包含内置的高中数学模拟数据)
+├── types.ts                    # TypeScript 类型定义
+├── App.tsx                     # 应用主入口
+└── index.tsx                   # 渲染入口
+```
+
+## 使用指南
+
+由于本项目是一个前端演示原型，后端 API 调用均由 `services/mockApi.ts` 进行模拟。
+
+1.  **上传原始试卷**：
+    *   在首页点击“上传原始试卷”区域。
+    *   选择任意文件（图片或 PDF）。
+    *   *注：无论上传什么文件，系统都会加载内置的高中数学模拟数据。*
+
+2.  **查看与编辑试题分析**：
+    *   等待加载完成后，可以看到 6 道预置的数学题。
+    *   点击题目右下角的 **编辑图标 (Edit)** 修改知识点或难度。
+    *   点击 **确认图标 (Check)** 锁定分析结果。
+
+3.  **上传学生答卷**：
+    *   当试卷分析加载完毕后，页面下方“上传学生答卷”区域将解锁。
+    *   上传任意文件以模拟学生答卷。
+    *   系统将展示模拟的学生手写答案、得分及 AI 评语。
+
+4.  **加入知识图谱**：
+    *   在学生分析页面的最底部，点击 **“加入学生知识图谱”** 按钮。
+    *   观察按钮状态变化，模拟数据上报流程。
+
+## 模拟数据说明
+
+系统内置了一套完整的高中数学（新课标）模拟数据，包含：
+*   **题型**：三角函数、立体几何、概率统计、数列、圆锥曲线、导数。
+*   **分析维度**：包含具体的教材章节（如“必修第二册 第8章 - 立体几何初步”）、核心素养（如“逻辑推理”、“直观想象”）等真实数据。
+*   **预设场景**：模拟了一位学生在立体几何和圆锥曲线题目上犯错的典型场景，以便演示漏洞分析功能。
