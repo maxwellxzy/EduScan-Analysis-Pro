@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Question, AnalysisTags } from '../types';
 import { BookOpenIcon, CheckIcon, EditIcon, SaveIcon, XIcon } from './Icons';
 import { Spinner } from './Spinner';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface ExamAnalysisViewProps {
   questions: Question[];
@@ -88,8 +89,8 @@ const QuestionCard: React.FC<{ question: Question, onUpdate: (id: string, update
             </span>
             {q.isAnalyzing && <span className="text-xs text-indigo-500 font-medium animate-pulse">正在分析内容...</span>}
         </div>
-        <div className="prose prose-slate max-w-none mb-4">
-            <p className="text-slate-700">{q.contentMd}</p>
+        <div className="mb-4">
+            <MarkdownRenderer content={q.contentMd} />
         </div>
         <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
             <img src={q.imageUrl} alt={`Question ${q.number}`} className="w-full h-48 object-cover opacity-90" />

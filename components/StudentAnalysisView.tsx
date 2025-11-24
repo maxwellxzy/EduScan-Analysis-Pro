@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Question, StudentAnswer } from '../types';
 import { CheckCircleIcon, AlertCircleIcon, BookOpenIcon } from './Icons';
 import { Spinner } from './Spinner';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface StudentAnalysisViewProps {
   questions: Question[];
@@ -117,7 +119,9 @@ export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questi
               {/* Question Context (Mini) */}
               <div className="md:w-1/3 p-6 border-b md:border-b-0 md:border-r border-slate-200/60 opacity-75">
                 <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">原题 {originalQuestion.number}</div>
-                <p className="text-sm text-slate-700 line-clamp-4">{originalQuestion.contentMd}</p>
+                <div className="max-h-32 overflow-y-auto mb-2 text-slate-700 text-sm">
+                   <MarkdownRenderer content={originalQuestion.contentMd} />
+                </div>
                 <div className="mt-4 flex flex-wrap gap-1">
                    {originalQuestion.analysis?.knowledgePoints.map(kp => (
                      <span key={kp} className="text-[10px] px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded">
@@ -133,7 +137,9 @@ export const StudentAnalysisView: React.FC<StudentAnalysisViewProps> = ({ questi
                  <div className="mb-4 rounded border border-slate-100 overflow-hidden">
                     <img src={ans.imageUrl} className="w-full h-24 object-cover" alt="Student answer crop" />
                  </div>
-                 <p className="text-sm font-mono text-slate-600">{ans.studentAnswerMd}</p>
+                 <div className="text-sm font-mono text-slate-600">
+                    <MarkdownRenderer content={ans.studentAnswerMd} />
+                 </div>
               </div>
 
               {/* Assessment */}
