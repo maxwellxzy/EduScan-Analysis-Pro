@@ -1,0 +1,5 @@
+{
+  "name": "EduScan Analysis Pro",
+  "description": "A comprehensive intelligent exam analysis system. It automates the breakdown of original test papers into questions, analyzing knowledge points, methods, and core competencies. It also provides detailed student performance analysis by comparing answer sheets against the analyzed exam. Built with React and TypeScript.",
+  "requestFramePermissions": []
+}
