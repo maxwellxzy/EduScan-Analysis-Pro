@@ -70,7 +70,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, label, sub
         <div className="flex flex-col items-center text-indigo-600">
            <FileTextIcon className="w-12 h-12 mb-3" />
            <p className="font-semibold">{selectedFileName}</p>
-           <p className="text-sm text-slate-500 mt-1">Click to change file</p>
+           <p className="text-sm text-slate-500 mt-1">点击更换文件</p>
         </div>
       ) : (
         <div className="flex flex-col items-center text-slate-500">

@@ -11,9 +11,9 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-slate-800">Exam Analysis Result</h2>
+        <h2 className="text-2xl font-bold text-slate-800">试卷分析结果</h2>
         <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-          {questions.length} Questions Processed
+          {questions.length} 道题目已处理
         </span>
       </div>
 
@@ -23,8 +23,8 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
             {/* Left: Question Content */}
             <div className="md:w-1/2 p-6 border-b md:border-b-0 md:border-r border-slate-100">
               <div className="flex justify-between items-start mb-4">
-                 <span className="bg-slate-800 text-white px-3 py-1 rounded-md text-sm font-bold">Q{q.number}</span>
-                 {q.isAnalyzing && <span className="text-xs text-indigo-500 font-medium animate-pulse">Analyzing content...</span>}
+                 <span className="bg-slate-800 text-white px-3 py-1 rounded-md text-sm font-bold">第 {q.number} 题</span>
+                 {q.isAnalyzing && <span className="text-xs text-indigo-500 font-medium animate-pulse">正在分析内容...</span>}
               </div>
               <div className="prose prose-slate max-w-none mb-4">
                 <p className="text-slate-700">{q.contentMd}</p>
@@ -39,7 +39,7 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
               {q.isAnalyzing ? (
                 <div className="h-full flex flex-col items-center justify-center space-y-3 text-slate-400">
                   <Spinner size="md" />
-                  <p>Extracting analysis points...</p>
+                  <p>正在提取分析点...</p>
                 </div>
               ) : q.analysis ? (
                 <div className="space-y-6">
@@ -48,12 +48,12 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
                     <div className="flex items-center space-x-2">
                          <BookOpenIcon className="w-5 h-5 text-slate-400" />
                          <div>
-                            <p className="text-xs text-slate-500 uppercase font-semibold">Chapter</p>
+                            <p className="text-xs text-slate-500 uppercase font-semibold">教材章节</p>
                             <p className="text-sm font-medium text-slate-800">{q.analysis.chapter}</p>
                          </div>
                     </div>
                     <div className="text-right">
-                         <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Difficulty</p>
+                         <p className="text-xs text-slate-500 uppercase font-semibold mb-1">难度系数</p>
                          <div className="flex items-center space-x-2">
                             <div className="flex space-x-0.5">
                                 {Array.from({length: 5}).map((_, i) => (
@@ -69,7 +69,7 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
                   <div>
                     <h4 className="flex items-center text-xs font-bold text-blue-700 uppercase tracking-wider mb-2">
                       <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                      Knowledge Points
+                      知识点
                     </h4>
                     <div className="flex flex-wrap gap-2">
                        {q.analysis.knowledgePoints.map(kp => (
@@ -84,7 +84,7 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
                   <div>
                     <h4 className="flex items-center text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">
                       <span className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>
-                      Methods
+                      解题方法
                     </h4>
                     <div className="flex flex-wrap gap-2">
                        {q.analysis.methods.map(m => (
@@ -99,7 +99,7 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
                   <div>
                     <h4 className="flex items-center text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">
                       <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                      Core Competencies
+                      核心素养
                     </h4>
                     <div className="flex flex-wrap gap-2">
                        {q.analysis.competencies.map(cp => (
@@ -112,7 +112,7 @@ export const ExamAnalysisView: React.FC<ExamAnalysisViewProps> = ({ questions })
 
                 </div>
               ) : (
-                <div className="text-red-500">Analysis failed.</div>
+                <div className="text-red-500">分析失败</div>
               )}
             </div>
           </div>

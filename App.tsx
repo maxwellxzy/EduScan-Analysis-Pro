@@ -126,7 +126,7 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">E</div>
-             <h1 className="text-xl font-bold text-slate-900 tracking-tight">EduScan Analysis Pro</h1>
+             <h1 className="text-xl font-bold text-slate-900 tracking-tight">EduScan 智能阅卷分析系统</h1>
           </div>
           <div className="text-sm text-slate-500">
             Intelligent Assessment System
@@ -140,14 +140,14 @@ const App = () => {
         <section>
           <div className="flex items-center space-x-4 mb-6">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">1</div>
-            <h2 className="text-lg font-semibold text-slate-800">Upload Original Exam Paper</h2>
+            <h2 className="text-lg font-semibold text-slate-800">上传原始试卷</h2>
           </div>
           
           <div className="space-y-6">
             <div className="w-full">
                <FileUpload 
-                 label="Drop Exam PDF/Image" 
-                 subLabel="Includes standard answers" 
+                 label="拖拽试卷 PDF/图片 到此处" 
+                 subLabel="请确保包含标准答案" 
                  onFileSelect={handleExamUpload}
                />
             </div>
@@ -156,7 +156,7 @@ const App = () => {
                {isExamSplitting ? (
                  <div className="h-64 flex flex-col items-center justify-center bg-white rounded-xl border border-slate-200 p-8">
                     <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-4"></div>
-                    <p className="text-slate-600">Splitting exam into questions using AI...</p>
+                    <p className="text-slate-600">AI正在分割试卷...</p>
                  </div>
                ) : questions.length > 0 ? (
                  <OverallSummary questions={questions} studentAnswers={studentAnswers.length > 0 ? studentAnswers : undefined} />
@@ -176,14 +176,14 @@ const App = () => {
         <section className={`transition-opacity duration-500 ${isExamFullyAnalyzed ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
           <div className="flex items-center space-x-4 mb-6 mt-12 border-t pt-8 border-slate-200">
             <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">2</div>
-            <h2 className="text-lg font-semibold text-slate-800">Upload Student Answer Sheet</h2>
+            <h2 className="text-lg font-semibold text-slate-800">上传学生答卷</h2>
           </div>
 
           <div className="grid md:grid-cols-4 gap-6">
              <div className="md:col-span-1">
                 <FileUpload 
-                  label="Drop Student Sheet" 
-                  subLabel="Handwritten or digital" 
+                  label="拖拽学生答卷" 
+                  subLabel="支持手写或电子版" 
                   onFileSelect={handleStudentUpload}
                   disabled={!isExamFullyAnalyzed}
                 />
@@ -192,7 +192,7 @@ const App = () => {
                 {isStudentSplitting && (
                    <div className="flex items-center space-x-3 text-purple-600 bg-purple-50 px-4 py-2 rounded-lg">
                       <div className="animate-spin h-5 w-5 border-2 border-current border-t-transparent rounded-full"></div>
-                      <span>Analyzing student handwriting and logic...</span>
+                      <span>正在分析学生笔迹与逻辑...</span>
                    </div>
                 )}
              </div>
@@ -202,7 +202,7 @@ const App = () => {
         {/* Step 4: Student Analysis Display */}
         {studentAnswers.length > 0 && (
            <section>
-              <StudentAnalysisView questions={questions} answers={studentAnswers} studentName="John Doe (Mock)" />
+              <StudentAnalysisView questions={questions} answers={studentAnswers} studentName="张三 (模拟数据)" />
            </section>
         )}
 

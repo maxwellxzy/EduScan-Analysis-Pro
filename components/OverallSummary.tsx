@@ -82,8 +82,8 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
                         cursor={{fill: '#f8fafc'}}
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                     />
-                    <Bar dataKey="total" name="Total Questions" fill="#f1f5f9" stackId="a" radius={[0, 4, 4, 0]} barSize={16} />
-                    {studentAnswers && <Bar dataKey="mastered" name="Mastered" fill={color === 'bg-blue-500' ? '#3b82f6' : color === 'bg-emerald-500' ? '#10b981' : '#a855f7'} stackId="a" radius={[0, 0, 0, 0]} barSize={16} />}
+                    <Bar dataKey="total" name="题目总数" fill="#f1f5f9" stackId="a" radius={[0, 4, 4, 0]} barSize={16} />
+                    {studentAnswers && <Bar dataKey="mastered" name="已掌握" fill={color === 'bg-blue-500' ? '#3b82f6' : color === 'bg-emerald-500' ? '#10b981' : '#a855f7'} stackId="a" radius={[0, 0, 0, 0]} barSize={16} />}
                 </BarChart>
             </ResponsiveContainer>
         </div>
@@ -99,7 +99,7 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500 rounded-full mix-blend-multiply filter blur-2xl opacity-50 transform translate-x-10 -translate-y-10"></div>
           
           <div>
-            <h3 className="text-indigo-100 font-medium text-xs uppercase tracking-wider mb-1">Total Exam Difficulty</h3>
+            <h3 className="text-indigo-100 font-medium text-xs uppercase tracking-wider mb-1">试卷总难度</h3>
             <div className="flex items-end space-x-2">
               <span className="text-5xl font-bold">{avgDifficulty.toFixed(1)}</span>
               <span className="text-indigo-200 mb-1">/ 10</span>
@@ -112,18 +112,18 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
           <div className="mt-6 flex justify-between text-sm border-t border-indigo-500/50 pt-4">
              <div>
                 <span className="block font-bold text-xl">{questions.length}</span>
-                <span className="text-indigo-200 text-xs">Questions</span>
+                <span className="text-indigo-200 text-xs">题目数量</span>
              </div>
              <div className="text-right">
                 <span className="block font-bold text-xl">{kpStats.length}</span>
-                <span className="text-indigo-200 text-xs">Top Topics</span>
+                <span className="text-indigo-200 text-xs">核心考点</span>
              </div>
           </div>
         </div>
 
         {/* Student Score Card */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
-            <h3 className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-2">Student Score</h3>
+            <h3 className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-2">学生得分</h3>
             {studentAnswers && studentAnswers.length > 0 ? (
                 <div className="flex items-center space-x-6">
                     <div className="relative w-24 h-24 flex items-center justify-center">
@@ -136,24 +136,24 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
                         </div>
                     </div>
                     <div>
-                        <div className="text-sm text-slate-500">Total Points</div>
+                        <div className="text-sm text-slate-500">总分</div>
                         <div className="text-3xl font-bold text-slate-800">{studentScore} <span className="text-lg text-slate-300">/ {maxScore}</span></div>
                         <div className={`text-xs font-semibold px-2 py-0.5 rounded mt-1 inline-block ${percentage >= 60 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
-                            {percentage >= 60 ? 'Passed' : 'Needs Review'}
+                            {percentage >= 60 ? '及格' : '需复习'}
                         </div>
                     </div>
                 </div>
             ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-slate-300">
                     <div className="w-12 h-12 rounded-full bg-slate-50 mb-2 border border-slate-100"></div>
-                    <span className="text-sm italic">Waiting for student answer sheet...</span>
+                    <span className="text-sm italic">等待上传答题卡...</span>
                 </div>
             )}
         </div>
 
         {/* Difficulty Distribution Chart */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-          <h3 className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-4">Question Difficulty Trend</h3>
+          <h3 className="text-slate-400 font-medium text-xs uppercase tracking-wider mb-4">题目难度分布</h3>
           {questions.length > 0 && analyzedCount > 0 ? (
             <div className="h-32 w-full">
                <ResponsiveContainer width="100%" height="100%">
@@ -179,7 +179,7 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                         labelStyle={{ color: '#64748b', fontWeight: 'bold' }}
                      />
-                     <Bar dataKey="difficulty" radius={[4, 4, 0, 0]}>
+                     <Bar dataKey="difficulty" name="难度" radius={[4, 4, 0, 0]}>
                         {difficultyData.map((entry, index) => (
                            <Cell key={`cell-${index}`} fill={entry.difficulty <= 4 ? '#10b981' : entry.difficulty <= 7 ? '#f59e0b' : '#ef4444'} />
                         ))}
@@ -189,7 +189,7 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
             </div>
           ) : (
              <div className="h-32 flex items-center justify-center text-slate-300 text-sm italic">
-                Analyzing difficulty levels...
+                正在分析难度...
              </div>
           )}
         </div>
@@ -198,9 +198,9 @@ export const OverallSummary: React.FC<OverallSummaryProps> = ({ questions, stude
       {/* Bottom Row: Detailed Metrics */}
       {questions.length > 0 && (
          <div className="flex flex-wrap gap-6">
-             <StatChart data={kpStats} color="bg-blue-500" title="Knowledge Points" />
-             <StatChart data={methodStats} color="bg-emerald-500" title="Methods" />
-             <StatChart data={compStats} color="bg-purple-500" title="Core Competencies" />
+             <StatChart data={kpStats} color="bg-blue-500" title="知识点覆盖" />
+             <StatChart data={methodStats} color="bg-emerald-500" title="解题方法" />
+             <StatChart data={compStats} color="bg-purple-500" title="核心素养" />
          </div>
       )}
     </div>

@@ -10,11 +10,11 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const mockBase64Image = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 const randomUrl = (seed: number) => `https://picsum.photos/800/200?random=${seed}`;
 
-// Mock Data Generators
-const mockChapters = ["Algebra Ch.3 - Quadratic Functions", "Geometry Ch.5 - Triangles", "Calculus Ch.1 - Limits", "Statistics Ch.2 - Probability Distributions"];
-const mockKnowledge = ["Pythagorean Theorem", "Derivatives", "Linear Equations", "Probability", "Vector Spaces", "Function Mapping"];
-const mockMethods = ["Deductive Reasoning", "Calculation", "Graph Analysis", "Modeling", "Substitution"];
-const mockCompetencies = ["Logical Thinking", "Mathematical Abstraction", "Data Analysis", "Critical Solving"];
+// Mock Data Generators (Translated)
+const mockChapters = ["代数 第三章 - 二次函数", "几何 第五章 - 三角形", "微积分 第一章 - 极限", "统计学 第二章 - 概率分布"];
+const mockKnowledge = ["勾股定理", "导数", "线性方程", "概率论", "向量空间", "函数映射"];
+const mockMethods = ["演绎推理", "计算求解", "图象分析", "数学建模", "换元法"];
+const mockCompetencies = ["逻辑推理", "数学抽象", "数据分析", "直观想象"];
 
 /**
  * 1. split_exam (Mock Endpoint)
@@ -31,7 +31,7 @@ export const splitExamApi = async (file: File): Promise<Partial<Question>[]> => 
     // In a real app, this would be the base64 string returned by the API. 
     // We use a URL here for the UI to look good, but the API contract is satisfied conceptually.
     imageUrl: randomUrl(i), 
-    contentMd: `**Question ${i + 1}:** A sample mathematical problem extracted from the uploaded exam paper. Solve for $x$ given the constraints in figure ${i+1}.`,
+    contentMd: `**第 ${i + 1} 题：** 从上传的试卷中提取的数学示例问题。如图 ${i+1} 所示，根据约束条件求解 $x$。`,
     analysis: null,
     isAnalyzing: true // Initial state
   }));
@@ -77,7 +77,7 @@ export const splitStudentExamApi = async (file: File, examQuestions: Question[])
   return examQuestions.map(q => ({
     questionId: q.id,
     imageUrl: `https://picsum.photos/800/150?random=${q.id}student`,
-    studentAnswerMd: `Student answer for Q${q.number}: The derivation implies that $f'(x) = 2x$. Therefore...`,
+    studentAnswerMd: `第 ${q.number} 题学生作答：推导过程表明 $f'(x) = 2x$。因此...`,
     isAnalyzing: true
   }));
 };
@@ -108,8 +108,8 @@ export const analyzeStudentAnswerApi = async (question: Question, answerMd: stri
     score,
     maxScore,
     feedback: isCorrect 
-      ? "Great job! The logic follows the standard derivation perfectly." 
-      : "There seems to be a misunderstanding in the second step of the equation.",
+      ? "做得很好！逻辑推导完全符合标准步骤。" 
+      : "在方程的第二步似乎存在误解，导致结果偏差。",
     masteredPoints: isCorrect ? knowledge : [],
     missingPoints: isCorrect ? [] : knowledge,
     masteredMethods: isCorrect ? methods : [],
